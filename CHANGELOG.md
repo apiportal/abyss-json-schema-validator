@@ -9,6 +9,39 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+## 0.1.23 - 2018-10-02
+
+### Added
+
+### Changed
+- fixes #103 Boolean type validation for the string type is incorrect
+
+## 0.1.22 - 2018-09-11
+
+### Added
+
+### Changed
+- fixes #101 enhance TypeValidator trying to convert type from TEXT
+
+## 0.1.21 - 2018-08-14
+
+### Added
+
+### Changed
+- fixes #94 Fix min/max error message of integer fields displayed as doubles. Thanks @NicholasAzar
+- fixes #93 Adding support for nullable fields. Thanks @NicholasAzar
+
+## 0.1.20 - 2018-07-30
+
+### Added
+
+### Changed
+- fixes #85 Update version in maven dependnecy sample. Thanks @banterCZ
+- fixes #89 Added example for custom keywords in tests. Thanks @Klas Kalaß
+- fixes #90 Remove unused dependency to slf4j-ext due to security issue. Thanks @Thorbias
+- fixes #91 update one test case to ensure compatibility of Java 6
+- fixes #92 rollback type validator for null value as it is against spec.
+
 ## 0.1.19 - 2018-04-07
 
 ### Added

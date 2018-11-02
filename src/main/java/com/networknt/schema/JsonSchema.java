@@ -18,9 +18,11 @@ package com.networknt.schema;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +40,8 @@ public class JsonSchema extends BaseJsonValidator {
     private static final Pattern intPattern = Pattern.compile("^[0-9]+$");
     protected final Map<String, JsonValidator> validators;
     private final ValidationContext validationContext;
+    //private ArrayList<LinkedHashMap<String,JsonNode>> anonymizationActions2;
+    private LinkedHashMap<String,JsonNode> anonymizationActions;
 
     public JsonSchema(ValidationContext validationContext,  JsonNode schemaNode) {
         this(validationContext,  "#", schemaNode, null);
@@ -117,6 +121,18 @@ public class JsonSchema extends BaseJsonValidator {
                 validators.put(getSchemaPath() + "/" + pname, validator);
             }
 
+            //Privacy Extensions - IFS
+            if (pname.equals("extensions")) {
+                //Find rootJsonSchema
+                JsonSchema rootJsonSchema = this;
+                while (rootJsonSchema.getParentSchema()!=null) {
+                    rootJsonSchema = rootJsonSchema.getParentSchema();
+                }
+
+                rootJsonSchema.addAnonymizationAction(getSchemaPath(), n);
+                System.out.println("Reading:" + getSchemaPath() + ":" + pname);
+            }
+
         }
         return validators;
     }
@@ -134,4 +150,29 @@ public class JsonSchema extends BaseJsonValidator {
         return "\"" + getSchemaPath() + "\" : " + getSchemaNode().toString();
     }
 
+
+/*
+    public void setAnonymizationActions(ArrayList<LinkedHashMap<String, JsonNode>> anonymizationActions) {
+        this.anonymizationActions = anonymizationActions;
+    }
+
+    public ArrayList<LinkedHashMap<String, JsonNode>> getAnonymizationActions() {
+        return anonymizationActions;
+    }
+*/
+
+    //Privacy Extensions - IFS
+    public LinkedHashMap<String, JsonNode> getAnonymizationActions() {
+        return anonymizationActions;
+    }
+
+    public void addAnonymizationAction(String path, JsonNode action) {
+        if (anonymizationActions == null || anonymizationActions.isEmpty()) {
+            anonymizationActions = new LinkedHashMap<>();
+        }
+
+        if (this.getParentSchema() == null) {
+            anonymizationActions.put(path, action);
+        }
+    }
 }

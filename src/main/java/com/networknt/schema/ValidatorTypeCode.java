@@ -62,7 +62,9 @@ public enum ValidatorTypeCode implements Keyword, ErrorMessageType {
     REQUIRED("required", "1028", new MessageFormat("{0}.{1}: is missing but it is required")),
     TYPE("type", "1029", new MessageFormat("{0}: {1} found, {2} expected")),
     UNION_TYPE("unionType", "1030", new MessageFormat("{0}: {1} found, but {2} is required")),
-    UNIQUE_ITEMS("uniqueItems", "1031", new MessageFormat("{0}: the items in the array must be unique"));
+    UNIQUE_ITEMS("uniqueItems", "1031", new MessageFormat("{0}: the items in the array must be unique")),
+    X_ABYSS_PRIVACY("x-abyss-privacy", "1032", new MessageFormat("{0} Privacy configuration error")),
+    EXTENSIONS("extensions", "1033", new MessageFormat("Privacy Violation In Path: {0} For Action: {1} Attribute:{2} Pattern: {3}"));
    
 	private static Map<String, ValidatorTypeCode> constants = new HashMap<String, ValidatorTypeCode>();
 
@@ -108,6 +110,8 @@ public enum ValidatorTypeCode implements Keyword, ErrorMessageType {
             if (shortClassName.startsWith("$")) {
                 // remove "$" from class name for $ref schema
                 shortClassName = shortClassName.substring(1);
+            } else if (shortClassName.equals("x-abyss-privacy")) {
+                shortClassName = "abyssPrivacy";
             }
 
             final String className = Character.toUpperCase(shortClassName.charAt(0)) + shortClassName.substring(1)

@@ -2,7 +2,7 @@
  * Copyright (c) 2016 Network New Technologies Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * You may not use this file except in compliance with the License.
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
@@ -32,7 +32,6 @@ import com.networknt.schema.url.StandardURLFetcher;
 import com.networknt.schema.url.URLFetcher;
 
 public class JsonSchemaFactory {
-
     private static final Logger logger = LoggerFactory
             .getLogger(JsonSchemaFactory.class);
     
@@ -42,6 +41,7 @@ public class JsonSchemaFactory {
         private URLFetcher urlFetcher;
         private String defaultMetaSchemaURI;
         private Map<String, JsonMetaSchema> jsonMetaSchemas = new HashMap<String, JsonMetaSchema>();
+        private Map<URL, URL> urlMap = new HashMap<URL, URL>();
         
         public Builder objectMapper(ObjectMapper objectMapper) {
             this.objectMapper = objectMapper;
@@ -70,13 +70,19 @@ public class JsonSchemaFactory {
             return this;
         }
         
+        public Builder addUrlMappings(Map<URL, URL> map) {
+            this.urlMap.putAll(map);
+            return this;
+        }
+        
         public JsonSchemaFactory build() {
             // create builtin keywords with (custom) formats.
             return new JsonSchemaFactory(
                     objectMapper == null ? new ObjectMapper() : objectMapper, 
                     urlFetcher == null ? new StandardURLFetcher(): urlFetcher, 
                     defaultMetaSchemaURI, 
-                    jsonMetaSchemas
+                    jsonMetaSchemas,
+                    urlMap
             );
         }
     }
@@ -85,8 +91,9 @@ public class JsonSchemaFactory {
     private final URLFetcher urlFetcher;
     private final String defaultMetaSchemaURI;
     private final Map<String, JsonMetaSchema> jsonMetaSchemas;
+    private final Map<URL, URL> urlMap;
 
-    private JsonSchemaFactory(ObjectMapper mapper, URLFetcher urlFetcher, String defaultMetaSchemaURI, Map<String, JsonMetaSchema> jsonMetaSchemas) {
+    private JsonSchemaFactory(ObjectMapper mapper, URLFetcher urlFetcher, String defaultMetaSchemaURI, Map<String, JsonMetaSchema> jsonMetaSchemas, Map<URL, URL> urlMap) {
         if (mapper == null) {
             throw new IllegalArgumentException("ObjectMapper must not be null");
         }
@@ -102,10 +109,14 @@ public class JsonSchemaFactory {
         if (jsonMetaSchemas.get(defaultMetaSchemaURI) == null) {
             throw new IllegalArgumentException("Meta Schema for default Meta Schema URI must be provided");
         }
+        if (urlMap == null) {
+            throw new IllegalArgumentException("URL Mappings must not be null");
+        }
         this.mapper = mapper;
         this.defaultMetaSchemaURI = defaultMetaSchemaURI;
         this.urlFetcher = urlFetcher;
         this.jsonMetaSchemas = jsonMetaSchemas;
+        this.urlMap = urlMap;
     }
 
     /**
@@ -136,12 +147,15 @@ public class JsonSchemaFactory {
                 .addMetaSchemas(blueprint.jsonMetaSchemas.values())
                 .urlFetcher(blueprint.urlFetcher)
                 .defaultMetaSchemaURI(blueprint.defaultMetaSchemaURI)
-                .objectMapper(blueprint.mapper);
+                .objectMapper(blueprint.mapper)
+                .addUrlMappings(blueprint.urlMap);
     }
     
-    private JsonSchema newJsonSchema(JsonNode schemaNode) {
+    private JsonSchema newJsonSchema(JsonNode schemaNode, SchemaValidatorsConfig config) {
         final ValidationContext validationContext = createValidationContext(schemaNode);
-        return new JsonSchema(validationContext, schemaNode);
+        validationContext.setConfig(config);
+        JsonSchema jsonSchema = new JsonSchema(validationContext, schemaNode);
+        return jsonSchema;
     }
 
     protected ValidationContext createValidationContext(JsonNode schemaNode) {
@@ -158,11 +172,25 @@ public class JsonSchemaFactory {
         }
         return jsonMetaSchema;
     }
-    
-    public JsonSchema getSchema(String schema) {
+
+    public JsonSchema getSchema(String schema, SchemaValidatorsConfig config) {
         try {
             final JsonNode schemaNode = mapper.readTree(schema);
-            return newJsonSchema(schemaNode);
+            return newJsonSchema(schemaNode, config);
+        } catch (IOException ioe) {
+            logger.error("Failed to load json schema!", ioe);
+            throw new JsonSchemaException(ioe);
+        }
+    }
+
+    public JsonSchema getSchema(String schema) {
+        return getSchema(schema, null);
+    }
+
+    public JsonSchema getSchema(InputStream schemaStream, SchemaValidatorsConfig config) {
+        try {
+            final JsonNode schemaNode = mapper.readTree(schemaStream);
+            return newJsonSchema(schemaNode, config);
         } catch (IOException ioe) {
             logger.error("Failed to load json schema!", ioe);
             throw new JsonSchemaException(ioe);
@@ -170,20 +198,17 @@ public class JsonSchemaFactory {
     }
 
     public JsonSchema getSchema(InputStream schemaStream) {
-        try {
-            final JsonNode schemaNode = mapper.readTree(schemaStream);
-            return newJsonSchema(schemaNode);
-        } catch (IOException ioe) {
-            logger.error("Failed to load json schema!", ioe);
-            throw new JsonSchemaException(ioe);
-        }
+        return getSchema(schemaStream, null);
     }
 
-    public JsonSchema getSchema(URL schemaURL) {
+    public JsonSchema getSchema(URL schemaURL, SchemaValidatorsConfig config) {
         try {
             InputStream inputStream = null;
+            Map<URL, URL> map = (config != null) ? config.getUrlMappings() : new HashMap<URL, URL>(urlMap);
+            map.putAll(urlMap);
+            URL mappedURL = map.getOrDefault(schemaURL, schemaURL);
             try {
-                inputStream = urlFetcher.fetch(schemaURL);
+                inputStream = urlFetcher.fetch(mappedURL);
                 JsonNode schemaNode = mapper.readTree(inputStream);
                 final JsonMetaSchema jsonMetaSchema = findMetaSchemaForSchema(schemaNode);
 
@@ -192,7 +217,7 @@ public class JsonSchemaFactory {
                     return new JsonSchema(new ValidationContext(jsonMetaSchema, this), schemaNode, true /*retrieved via id, resolving will not change anything*/);
                 }
 
-                return newJsonSchema(schemaNode);
+                return newJsonSchema(schemaNode, config);
             } finally {
                 if (inputStream != null) {
                     inputStream.close();
@@ -204,8 +229,16 @@ public class JsonSchemaFactory {
         }
     }
 
+    public JsonSchema getSchema(URL schemaURL) {
+        return getSchema(schemaURL, null);
+    }
+
+    public JsonSchema getSchema(JsonNode jsonNode, SchemaValidatorsConfig config) {
+        return newJsonSchema(jsonNode, config);
+    }
+
     public JsonSchema getSchema(JsonNode jsonNode) {
-        return newJsonSchema(jsonNode);
+        return newJsonSchema(jsonNode, null);
     }
 
     private boolean idMatchesSourceUrl(JsonMetaSchema metaSchema, JsonNode schema, URL schemaUrl) {
@@ -219,7 +252,5 @@ public class JsonSchemaFactory {
             logger.debug("Matching " + id + " to " + schemaUrl.toString() + ": " + result);
         }
         return result;
-
     }
-
 }

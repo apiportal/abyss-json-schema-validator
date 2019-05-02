@@ -2,7 +2,7 @@
  * Copyright (c) 2016 Network New Technologies Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * You may not use this file except in compliance with the License.
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
@@ -16,20 +16,13 @@
 
 package com.networknt.schema;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * This is the core of json constraint implementation. It parses json constraint
@@ -40,8 +33,10 @@ public class JsonSchema extends BaseJsonValidator {
     private static final Pattern intPattern = Pattern.compile("^[0-9]+$");
     protected final Map<String, JsonValidator> validators;
     private final ValidationContext validationContext;
-    //private ArrayList<LinkedHashMap<String,JsonNode>> anonymizationActions2;
+
     private LinkedHashMap<String,JsonNode> anonymizationActions;
+    
+    private JsonValidator requiredValidator = null;
 
     public JsonSchema(ValidationContext validationContext,  JsonNode schemaNode) {
         this(validationContext,  "#", schemaNode, null);
@@ -52,10 +47,11 @@ public class JsonSchema extends BaseJsonValidator {
         this(validationContext,  schemaPath, schemaNode, parent, false);
     }
 
-    public JsonSchema(ValidationContext validatorFactory,  String schemaPath, JsonNode schemaNode,
+    public JsonSchema(ValidationContext validationContext,  String schemaPath, JsonNode schemaNode,
                JsonSchema parent, boolean suppressSubSchemaRetrieval) {
         super(schemaPath, schemaNode, parent, null, suppressSubSchemaRetrieval);
-        this.validationContext = validatorFactory;
+        this.validationContext = validationContext;
+        this.config = validationContext.getConfig();
         this.validators = Collections.unmodifiableMap(this.read(schemaNode));
     }
 
@@ -119,6 +115,9 @@ public class JsonSchema extends BaseJsonValidator {
             JsonValidator validator = validationContext.newValidator(getSchemaPath(), pname, n, this);
             if (validator != null) {
                 validators.put(getSchemaPath() + "/" + pname, validator);
+                
+                if(pname.equals("required"))
+                	requiredValidator = validator;
             }
 
             //Privacy Extensions - IFS
@@ -150,6 +149,12 @@ public class JsonSchema extends BaseJsonValidator {
         return "\"" + getSchemaPath() + "\" : " + getSchemaNode().toString();
     }
 
+    public boolean hasRequiredValidator() {
+    	return requiredValidator != null ? true : false;
+    }
+	public JsonValidator getRequiredValidator() {
+		return requiredValidator;
+	}
 
 /*
     public void setAnonymizationActions(ArrayList<LinkedHashMap<String, JsonNode>> anonymizationActions) {

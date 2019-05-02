@@ -2,7 +2,7 @@
  * Copyright (c) 2016 Network New Technologies Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * You may not use this file except in compliance with the License.
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
@@ -74,11 +74,17 @@ public class JsonSchemaTest {
         for (int j = 0; j < testCases.size(); j++) {
             try {
                 JsonNode testCase = testCases.get(j);
-                JsonSchema schema = validatorFactory.getSchema(testCase.get("schema"));
+                SchemaValidatorsConfig config = new SchemaValidatorsConfig();
+
                 ArrayNode testNodes = (ArrayNode) testCase.get("tests");
                 for (int i = 0; i < testNodes.size(); i++) {
                     JsonNode test = testNodes.get(i);
                     JsonNode node = test.get("data");
+                    JsonNode typeLooseNode = test.get("isTypeLoose");
+                    // Configure the schemaValidator to set typeLoose's value based on the test file,
+                    // if test file do not contains typeLoose flag, use default value: true.
+                    config.setTypeLoose((typeLooseNode == null) ? true : typeLooseNode.asBoolean());
+                    JsonSchema schema = validatorFactory.getSchema(testCase.get("schema"), config);
                     List<ValidationMessage> errors = new ArrayList<ValidationMessage>();
 
                     errors.addAll(schema.validate(node));
@@ -122,6 +128,11 @@ public class JsonSchemaTest {
     @Test
     public void testFormatValidator() throws Exception {
         runTestFile("tests/optional/format.json");
+    }
+
+    @Test
+    public void testComplexSchema() throws Exception {
+        runTestFile("tests/optional/complex.json");
     }
 
     @Test
@@ -262,6 +273,11 @@ public class JsonSchemaTest {
     @Test
     public void testTypeValidator() throws Exception {
         runTestFile("tests/type.json");
+    }
+
+    @Test
+    public void testUnionTypeValidator() throws Exception {
+        runTestFile("tests/union_type.json");
     }
 
     @Test

@@ -2,7 +2,7 @@
  * Copyright (c) 2016 Network New Technologies Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * You may not use this file except in compliance with the License.
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
@@ -130,7 +130,12 @@ public class OneOfValidator extends BaseJsonValidator implements JsonValidator {
 
     public Set<ValidationMessage> validate(JsonNode node, JsonNode rootNode, String at) {
         debug(logger, node, rootNode, at);
-
+        
+        // this validator considers a missing node as an error
+        // set it here to true, however re-set it to its original value upon finishing the validation
+        boolean missingNodeAsError = config.isMissingNodeAsError();
+        config.setMissingNodeAsError(true);
+        
         int numberOfValidSchema = 0;
         Set<ValidationMessage> errors = new LinkedHashSet<ValidationMessage>();
         
@@ -147,11 +152,17 @@ public class OneOfValidator extends BaseJsonValidator implements JsonValidator {
                 errors = new LinkedHashSet<ValidationMessage>();
             }
             if(numberOfValidSchema == 0){
-        		errors.addAll(schemaErrors);
-        	    }
-            if (numberOfValidSchema > 1) {
-                break;
-            }
+            	// one of has matched one of the elements
+            	// if it has an error here, it is due to an element validation error
+            	// within its child elements
+            	if(config.hasElementValidationError()) {
+            		errors.clear();
+            		errors.addAll(schemaErrors);
+            		break;
+            	} else {
+            		errors.addAll(schemaErrors);
+            	}
+        	}
         }
         
         if (numberOfValidSchema == 0) {
@@ -170,6 +181,9 @@ public class OneOfValidator extends BaseJsonValidator implements JsonValidator {
         if (numberOfValidSchema > 1) {
             errors = Collections.singleton(buildValidationMessage(at, ""));
         }
+        
+        // reset the flag for error handling
+        config.setMissingNodeAsError(missingNodeAsError);
         
         return Collections.unmodifiableSet(errors);
     }

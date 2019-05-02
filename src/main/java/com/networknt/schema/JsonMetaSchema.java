@@ -2,7 +2,7 @@
  * Copyright (c) 2016 Network New Technologies Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * You may not use this file except in compliance with the License.
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
@@ -46,7 +46,7 @@ public class JsonMetaSchema {
         public static final List<Format> BUILTIN_FORMATS = new ArrayList<Format>();
         static {
             BUILTIN_FORMATS.add(pattern("date-time", 
-                    "^\\d{4}-(?:0[0-9]{1}|1[0-2]{1})-(0?[1-9]|[12][0-9]|3[01])[tT ]\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?([zZ]|[+-]\\d{2}:\\d{2})$"));
+                    "^\\d{4}-(?:0[0-9]{1}|1[0-2]{1})-(0?[1-9]|[12][0-9]|3[01])[tT ]\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?([zZ]?|[+-]\\d{2}:\\d{2})$"));
             BUILTIN_FORMATS.add(pattern("date", "^\\d{4}-(?:0[0-9]{1}|1[0-2]{1})-(0?[1-9]|[12][0-9]|3[01])$"));
             BUILTIN_FORMATS.add(pattern("time", "^\\d{2}:\\d{2}:\\d{2}$"));
             BUILTIN_FORMATS.add(pattern("email", "^\\S+@\\S+$"));

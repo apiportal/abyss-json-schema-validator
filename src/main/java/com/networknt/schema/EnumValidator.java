@@ -2,7 +2,7 @@
  * Copyright (c) 2016 Network New Technologies Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * You may not use this file except in compliance with the License.
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
@@ -65,11 +65,28 @@ public class EnumValidator extends BaseJsonValidator implements JsonValidator {
 
         Set<ValidationMessage> errors = new LinkedHashSet<ValidationMessage>();
 
-        if (!nodes.contains(node)) {
+        if (!nodes.contains(node) && !(config.isTypeLoose() && isTypeLooseContainsInEnum(node))) {
             errors.add(buildValidationMessage(at, error));
         }
 
         return Collections.unmodifiableSet(errors);
+    }
+
+    /**
+     * Check whether enum contains the value of the JsonNode if the typeLoose is enabled.
+     * @param node JsonNode to check
+     */
+    private boolean isTypeLooseContainsInEnum(JsonNode node) {
+        if (TypeFactory.getValueNodeType(node) == JsonType.STRING) {
+            String nodeText = node.textValue();
+            for (JsonNode n : nodes) {
+                String value = n.asText();
+                if (value != null && value.equals(nodeText)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

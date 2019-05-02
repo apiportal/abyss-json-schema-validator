@@ -9,6 +9,89 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+## 1.0.7 - 2019-04-29
+
+### Added
+
+### Changed
+
+- fixes #140 Convert double to BigDecimal in MultipleOfValidator to make the validation more accurate. Thanks @jiachen1120
+
+## 1.0.6 - 2019-04-10
+
+### Added
+
+### Changed
+
+- fixes #132 minimum/maximum validation of integral numbers prone to overflow. Thanks @kosty
+- fixes #123 Add link to Javadocs. Thanks @rhwood
+
+## 1.0.5 - 2019-04-01
+
+### Added
+
+### Changed
+
+- fixes #127 update license copyright and add NOTICE
+- fixes #125 feat: Add URL mappings. Thanks @rhwood
+
+## 1.0.4 - 2019-03-14
+
+### Added
+
+### Changed
+
+- fixes #119 Almost JSON-spec compliant validation of numeric values. Thanks @kosty
+- fixes #120 Update the version in the README.md file. Thanks @chenyan71
+
+## 1.0.3 - 2019-02-10
+
+### Added
+
+### Changed
+
+- fixes #116 Fail to validate numeric and Integer in TypeValidator. Thanks @jiachen1120
+
+## 1.0.2 - 2019-02-05
+
+### Added
+
+### Changed
+
+- fixes #114 LocalDateTime validation error. Thanks @chenyan71
+- fixes #113 Fixed validation for path parameters and query parameters. Thanks @jiachen1120
+
+## 1.0.1 - 2019-01-10
+
+### Added
+
+### Changed
+- fixes #112 AnyOfValidator: only return expectedTypeList if not empty. Thanks @c14s
+- fixes #111 Validation failure for optional field in a schema - in the PropertiesValidator. Thanks @ddobrin
+
+## 0.1.26 - 2018-12-24
+
+### Added
+
+### Changed
+- fixes #110 Validation Error when using OneOf in OpenAPI specs. Thanks @ddobrin
+
+## 0.1.25 - 2018-12-12
+
+### Added
+
+### Changed
+- fixes #108 v0.1.24 error on array union type. Thanks @nitin456
+- fixes #107 Fix for perfomance issue Thanks @nitin456
+- fixes #106 Fix for enable loose type validator for REST Thanks @BalloonWen
+
+## 0.1.24 - 2018-11-21
+
+### Added
+
+### Changed
+- fixes #105 temporary fix to performance issue. Thanks @nitin456
+
 ## 0.1.23 - 2018-10-02
 
 ### Added

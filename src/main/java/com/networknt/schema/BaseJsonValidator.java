@@ -2,7 +2,7 @@
  * Copyright (c) 2016 Network New Technologies Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * You may not use this file except in compliance with the License.
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
@@ -32,11 +32,16 @@ public abstract class BaseJsonValidator implements JsonValidator {
     private boolean suppressSubSchemaRetrieval;
     private ValidatorTypeCode validatorType;
     private ErrorMessageType errorMessageType;
+    /**
+     * SchemaValidatorsConfig can only get and set in validationContext
+     */
+    protected SchemaValidatorsConfig config;
 
     
     public BaseJsonValidator(String schemaPath, JsonNode schemaNode, JsonSchema parentSchema,
                              ValidatorTypeCode validatorType, ValidationContext validationContext) {
     	this(schemaPath, schemaNode, parentSchema, validatorType, false );
+    	this.config = validationContext.getConfig() == null ? new SchemaValidatorsConfig() : validationContext.getConfig();
     }
 
     public BaseJsonValidator(String schemaPath, JsonNode schemaNode, JsonSchema parentSchema,

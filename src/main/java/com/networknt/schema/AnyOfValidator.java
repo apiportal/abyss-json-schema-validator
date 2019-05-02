@@ -2,7 +2,7 @@
  * Copyright (c) 2016 Network New Technologies Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * You may not use this file except in compliance with the License.
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
@@ -17,6 +17,7 @@
 package com.networknt.schema;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,15 +44,28 @@ public class AnyOfValidator extends BaseJsonValidator implements JsonValidator {
         debug(logger, node, rootNode, at);
 
         Set<ValidationMessage> allErrors = new LinkedHashSet<ValidationMessage>();
+        String typeValidatorName = "anyOf/type";
+        List<String> expectedTypeList = new ArrayList<String>();
 
         for (JsonSchema schema : schemas) {
+            if (schema.validators.containsKey(typeValidatorName)) {
+                TypeValidator typeValidator = ((TypeValidator) schema.validators.get(typeValidatorName));
+                //If schema has type validator and node type doesn't match with schemaType then ignore it
+                //For union type, it is must to call TypeValidator
+                if (typeValidator.getSchemaType() != JsonType.UNION && !typeValidator.equalsToSchemaType(node)) {
+                    expectedTypeList.add(typeValidator.getSchemaType().toString());
+                    continue;
+                }
+            }
             Set<ValidationMessage> errors = schema.validate(node, rootNode, at);
             if (errors.isEmpty()) {
                 return errors;
             }
             allErrors.addAll(errors);
         }
-
+        if (!expectedTypeList.isEmpty()) {
+            return Collections.singleton(buildValidationMessage(at, StringUtils.join(expectedTypeList)));
+        }
         return Collections.unmodifiableSet(allErrors);
     }
 

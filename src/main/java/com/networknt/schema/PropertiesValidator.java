@@ -2,7 +2,7 @@
  * Copyright (c) 2016 Network New Technologies Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * You may not use this file except in compliance with the License.
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
@@ -46,7 +46,20 @@ public class PropertiesValidator extends BaseJsonValidator implements JsonValida
             JsonNode propertyNode = node.get(entry.getKey());
 
             if (propertyNode != null) {
-                errors.addAll(propertySchema.validate(propertyNode, rootNode, at + "." + entry.getKey()));
+                errors.addAll(propertySchema.validate(propertyNode, rootNode, at + "." + entry.getKey())); 
+                
+                // this was a regular validation error; mark it as such
+                if(!errors.isEmpty()) {
+                	config.setElementValidationError(true);
+                }
+            } else {
+            	// if a node could not be found, treat is as error/continue, depending on the SchemaValidatorsConfig
+            	if(config.isMissingNodeAsError()) {
+            		if(getParentSchema().hasRequiredValidator())
+                		errors.addAll(getParentSchema().getRequiredValidator().validate(node,  rootNode, at));     
+            		else 
+                		errors.add(buildValidationMessage(at, node.toString()));
+            	}
             }
         }
 

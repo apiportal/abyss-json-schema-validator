@@ -1,5 +1,15 @@
+This is an implementation of the [JSON Schema Core Draft v4](http://json-schema.org/latest/json-schema-core.html) specification for OpenAPI 3.0. It uses the [Jackson](https://github.com/FasterXML/jackson) for json parsing.
+
+[Stack Overflow](https://stackoverflow.com/questions/tagged/light-4j) |
+[Google Group](https://groups.google.com/forum/#!forum/light-4j) |
+[Gitter Chat](https://gitter.im/networknt/light-rest-4j) |
+[Subreddit](https://www.reddit.com/r/lightapi/) |
+[Youtube Channel](https://www.youtube.com/channel/UCHCRMWJVXw8iB7zKxF55Byw) |
+[Documentation](https://doc.networknt.com/library/json-overlay/) |
+[Javadocs](https://www.javadoc.io/doc/com.networknt/json-schema-validator) |
+[Contribution Guide](https://doc.networknt.com/contribute/) |
+
 [![Build Status](https://travis-ci.org/networknt/json-schema-validator.svg?branch=master)](https://travis-ci.org/networknt/json-schema-validator)
-[![Join the chat at https://gitter.im/networknt/json-schema-validator](https://badges.gitter.im/networknt/json-schema-validator.svg)](https://gitter.im/networknt/json-schema-validator?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # json-schema-validator
 
@@ -14,8 +24,6 @@ and RPC schema for [light-hybrid-4j](http://www.networknt.com/style/light-hybrid
 * [Quickstart](#quickstart)
 
 
-This project is an implementation of the [JSON Schema Core Draft v4](http://json-schema.org/latest/json-schema-core.html)
-specification. It uses the [Jackson](https://github.com/FasterXML/jackson) for json parsing.
 
 # Why to use this library?
 
@@ -43,7 +51,7 @@ Add the following to your `pom.xml`:
 <dependency>
     <groupId>com.networknt</groupId>
     <artifactId>json-schema-validator</artifactId>
-    <version>0.1.19</version>
+    <version>1.0.4</version>
 </dependency>
 ```
 
@@ -59,7 +67,7 @@ as it is the way to construct JsonSchema object.
  * Copyright (c) 2016 Network New Technologies Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * You may not use this file except in compliance with the License.
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0

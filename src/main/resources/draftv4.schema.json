@@ -60,6 +60,30 @@
     "description": {
       "type": "string"
     },
+    "x-abyss-privacy": {
+      "type": "object",
+      "properties": {
+        "attributeClass": {
+          "type": "string",
+          "enum": ["id", "qid", "sensitive","auxiliary"]
+        },
+        "action": {
+          "type": "string",
+          "enum": ["remove","mask","generalize","passThrough"]
+        },
+        "matchPattern": {
+          "type": "string",
+          "format": "regex"
+        },
+        "maskPattern": {
+          "type": "string",
+          "format": "regex"
+        },
+        "generalizationLevel": {
+          "type": "integer"
+        }
+      }
+    },
     "default": {},
     "multipleOf": {
       "type": "number",

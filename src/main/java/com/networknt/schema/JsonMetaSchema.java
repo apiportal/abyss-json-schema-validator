@@ -227,6 +227,12 @@ public class JsonMetaSchema {
     
     public JsonValidator newValidator(ValidationContext validationContext, String schemaPath, String keyword /* keyword */, JsonNode schemaNode,
             JsonSchema parentSchema) {
+        if (schemaPath.contains("Subject/properties/password]")) {
+            System.out.println("JsonMetaSchema Invoked... schemaPath[" + schemaPath + "] keyword:[" + keyword + "]");
+        }
+        if (keyword.equals("extensions")) {
+            System.out.println("JsonMetaSchema Invoked for extensions... schemaPath[" + schemaPath + "] keyword:[" + keyword + "]");
+        }
         
         try {
             Keyword kw = keywords.get(keyword);

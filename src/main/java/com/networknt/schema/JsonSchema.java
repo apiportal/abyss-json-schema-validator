@@ -34,6 +34,8 @@ public class JsonSchema extends BaseJsonValidator {
     protected final Map<String, JsonValidator> validators;
     private final ValidationContext validationContext;
     
+    private LinkedHashMap<String,JsonNode> anonymizationActions;
+	
     private JsonValidator requiredValidator = null;
 
     public JsonSchema(ValidationContext validationContext,  JsonNode schemaNode) {
@@ -118,6 +120,18 @@ public class JsonSchema extends BaseJsonValidator {
                 	requiredValidator = validator;
             }
 
+            //Privacy Extensions - IFS
+            if (pname.equals("extensions")) {
+                //Find rootJsonSchema
+                JsonSchema rootJsonSchema = this;
+                while (rootJsonSchema.getParentSchema()!=null) {
+                    rootJsonSchema = rootJsonSchema.getParentSchema();
+                }
+
+                rootJsonSchema.addAnonymizationAction(getSchemaPath(), n);
+                System.out.println("Reading:" + getSchemaPath() + ":" + pname);
+            }
+
         }
         return validators;
     }
@@ -142,4 +156,29 @@ public class JsonSchema extends BaseJsonValidator {
 	public JsonValidator getRequiredValidator() {
 		return requiredValidator;
 	}
+
+/*
+    public void setAnonymizationActions(ArrayList<LinkedHashMap<String, JsonNode>> anonymizationActions) {
+        this.anonymizationActions = anonymizationActions;
+    }
+
+    public ArrayList<LinkedHashMap<String, JsonNode>> getAnonymizationActions() {
+        return anonymizationActions;
+    }
+*/
+
+    //Privacy Extensions - IFS
+    public LinkedHashMap<String, JsonNode> getAnonymizationActions() {
+        return anonymizationActions;
+    }
+
+    public void addAnonymizationAction(String path, JsonNode action) {
+        if (anonymizationActions == null || anonymizationActions.isEmpty()) {
+            anonymizationActions = new LinkedHashMap<>();
+        }
+
+        if (this.getParentSchema() == null) {
+            anonymizationActions.put(path, action);
+        }
+    }
 }

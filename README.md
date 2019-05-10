@@ -9,7 +9,7 @@ This is an implementation of the [JSON Schema Core Draft v4](http://json-schema.
 [Javadocs](https://www.javadoc.io/doc/com.networknt/json-schema-validator) |
 [Contribution Guide](https://doc.networknt.com/contribute/) |
 
-[![Build Status](https://travis-ci.org/networknt/json-schema-validator.svg?branch=master)](https://travis-ci.org/networknt/json-schema-validator)
+[![Build Status](https://travis-ci.org/apiportal/abyss-json-schema-validator.svg?branch=master)](https://travis-ci.org/apiportal/abyss-json-schema-validator)
 
 # json-schema-validator
 

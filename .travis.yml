@@ -1,8 +1,18 @@
 language: java
-
-cache:
- directories:
-   - $HOME/.m2
-
 jdk:
-   - oraclejdk8
+  - openjdk8
+cache:
+  directories:
+    - "$HOME/.m2"
+before_install:
+  - echo $GPG_SECRET_KEYS | base64 --decode | gpg --import
+  - echo $GPG_OWNERTRUST | base64 --decode | gpg --import-ownertrust
+install:
+  - mvn -s .travis.maven.settings.xml -version -B
+script:
+  - mvn -s .travis.maven.settings.xml clean install deploy -P sonatype-oss-release
+
+# Send notification to Slack
+notifications:
+  slack:
+    secure: "ao/5Z/XfVe+1lgt0pm4cDoS9iPNPh/7vFqvjyLghx2XaiyPOaqlNWpMJot6OJrU638upkogi69bsw8+Upx4hWP5XiBWAIf55Eegz7/QaupX+l1Ocx4T82RXtp3qMIOQxU2TRZhuS4m/aUzFe+v8hAIc30IVg+OF9mcTdsftAa7Wm7SuxvjJA9pVuK8+Q5tgE0g/eGSErsOf6z+AKsvvFfwOaVE/zWNnS9fanp5hetYi/N6RCd+dhPVB2n4wFLgkGGuZBiaEWc+LK3xYKksR+fTCS+3H2Epiz68FS4NYgyePcuKUY4vUTmZM8aNoUovLbrK1DFs8aJSrXEASjoeuvnEDHzcTXPGyv6k3mnV0RcCA19tWa7RjLs0G6cptIgQLnkrCRQyeXb53cg21aZhee23K6H/POwgD5A8KGOsgdXskIcRRxx1aYsTS5ckVo07xBpbRzCD1wuZRJZZHWLt0eYuDbiSYo4xWSqhN4EokwTWylKKE5dSn9EoF4+NN4dVn3S0gw8Nh0Q+MHTZuVPQhXbbSVLx/AGTMPHzLD5zVGFwDl30hSuWDMfvoixQsi0/iM4pYaEH2DVwY+dNoAIo3JJdz8ea21E7SKtEsta7zNYkNVB+STPFH5UZEU03fa9uvEyWRqP6x/4xjbf+nkUh2M9/3cVh3mFh+MREkAg/hL9Cg="

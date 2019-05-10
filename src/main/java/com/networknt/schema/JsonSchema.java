@@ -36,6 +36,8 @@ public class JsonSchema extends BaseJsonValidator {
 
     private LinkedHashMap<String,JsonNode> anonymizationActions;
     
+    private LinkedHashMap<String,JsonNode> anonymizationActions;
+	
     private JsonValidator requiredValidator = null;
 
     public JsonSchema(ValidationContext validationContext,  JsonNode schemaNode) {

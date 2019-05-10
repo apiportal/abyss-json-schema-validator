@@ -33,9 +33,9 @@ public class JsonSchema extends BaseJsonValidator {
     private static final Pattern intPattern = Pattern.compile("^[0-9]+$");
     protected final Map<String, JsonValidator> validators;
     private final ValidationContext validationContext;
-    
+
     private LinkedHashMap<String,JsonNode> anonymizationActions;
-	
+    
     private JsonValidator requiredValidator = null;
 
     public JsonSchema(ValidationContext validationContext,  JsonNode schemaNode) {
@@ -152,7 +152,6 @@ public class JsonSchema extends BaseJsonValidator {
     public boolean hasRequiredValidator() {
     	return requiredValidator != null ? true : false;
     }
-    
 	public JsonValidator getRequiredValidator() {
 		return requiredValidator;
 	}

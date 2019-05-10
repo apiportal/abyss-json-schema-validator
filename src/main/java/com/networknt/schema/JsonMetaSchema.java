@@ -233,7 +233,7 @@ public class JsonMetaSchema {
         if (keyword.equals("extensions")) {
             System.out.println("JsonMetaSchema Invoked for extensions... schemaPath[" + schemaPath + "] keyword:[" + keyword + "]");
         }
-        
+
         try {
             Keyword kw = keywords.get(keyword);
             if (kw == null) {

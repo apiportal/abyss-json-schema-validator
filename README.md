@@ -11,6 +11,16 @@ This is an implementation of the [JSON Schema Core Draft v4](http://json-schema.
 
 [![Build Status](https://travis-ci.org/apiportal/abyss-json-schema-validator.svg?branch=master)](https://travis-ci.org/apiportal/abyss-json-schema-validator)
 
+# Abyss Note
+This is the repository for Abyss Json Schema Validator that is a fork and clone of [Networknt Json Schema Validator](https://github.com/networknt/json-schema-validator)
+
+##### Modifications:
+-   Abyss Privacy Validator implemented 
+-   Abyss OpenaAPI "x-abyss-privacy" extension validator implemented
+-   JSON Schema Core Draft v4 specification json file altered for adding "x-abyss-privacy" object
+ 
+Please check the [README.md](https://github.com/networknt/json-schema-validator/blob/master/README.md) for copyright
+
 # json-schema-validator
 
 A Java json schema validator that supports json schema draft v4. It is a key component in our
